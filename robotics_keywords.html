@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotics Keywords — المحاضرات الأربعة</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+
+    --lec1: #f97316;
+    --lec1-dim: rgba(249,115,22,0.12);
+    --lec2: #22d3ee;
+    --lec2-dim: rgba(34,211,238,0.12);
+    --lec3: #a78bfa;
+    --lec3-dim: rgba(167,139,250,0.12);
+    --lec4: #4ade80;
+    --lec4-dim: rgba(74,222,128,0.12);
+
+    --text: #e8e8f0;
+    --text-dim: #8888aa;
+    --mono: 'Space Mono', monospace;
+    --arabic: 'Tajawal', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--arabic);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    text-align: center;
+    padding: 60px 24px 40px;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(167,139,250,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #f97316 0%, #a78bfa 50%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  hero h2 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 900;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #f97316 0%, #a78bfa 50%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  
+  .hero p {
+    color: var(--text-dim);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* ─── NAV TABS ─── */
+  .nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px 32px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: var(--arabic);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .tab-btn:hover { color: var(--text); border-color: #44446a; }
+  .tab-btn[data-lec="1"].active { border-color: var(--lec1); color: var(--lec1); background: var(--lec1-dim); }
+  .tab-btn[data-lec="2"].active { border-color: var(--lec2); color: var(--lec2); background: var(--lec2-dim); }
+  .tab-btn[data-lec="3"].active { border-color: var(--lec3); color: var(--lec3); background: var(--lec3-dim); }
+  .tab-btn[data-lec="4"].active { border-color: var(--lec4); color: var(--lec4); background: var(--lec4-dim); }
+
+  /* ─── PANELS ─── */
+  .panel { display: none; padding: 0 16px 60px; max-width: 1300px; margin: 0 auto; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .panel-title {
+    font-size: 13px;
+    font-family: var(--mono);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel[data-lec="1"] .panel-title { color: var(--lec1); border-color: rgba(249,115,22,0.3); }
+  .panel[data-lec="2"] .panel-title { color: var(--lec2); border-color: rgba(34,211,238,0.3); }
+  .panel[data-lec="3"] .panel-title { color: var(--lec3); border-color: rgba(167,139,250,0.3); }
+  .panel[data-lec="4"] .panel-title { color: var(--lec4); border-color: rgba(74,222,128,0.3); }
+
+  /* ─── GRID ─── */
+  .kw-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  /* ─── CARD ─── */
+  .kw-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .kw-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .kw-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .kw-card:hover::before { opacity: 1; }
+
+  .panel[data-lec="1"] .kw-card:hover { border-color: rgba(249,115,22,0.5); }
+  .panel[data-lec="1"] .kw-card::before { background: var(--lec1); }
+  .panel[data-lec="2"] .kw-card:hover { border-color: rgba(34,211,238,0.5); }
+  .panel[data-lec="2"] .kw-card::before { background: var(--lec2); }
+  .panel[data-lec="3"] .kw-card:hover { border-color: rgba(167,139,250,0.5); }
+  .panel[data-lec="3"] .kw-card::before { background: var(--lec3); }
+  .panel[data-lec="4"] .kw-card:hover { border-color: rgba(74,222,128,0.5); }
+  .panel[data-lec="4"] .kw-card::before { background: var(--lec4); }
+
+  .kw-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .kw-emoji { font-size: 20px; flex-shrink: 0; }
+  .kw-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .kw-subtitle {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  .kw-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    transition: all 0.15s;
+    cursor: default;
+  }
+  .tag:hover { color: var(--text); border-color: #44446a; transform: scale(1.04); }
+
+  /* accent tags */
+  .panel[data-lec="1"] .tag.accent { background: var(--lec1-dim); border-color: rgba(249,115,22,0.4); color: var(--lec1); }
+  .panel[data-lec="2"] .tag.accent { background: var(--lec2-dim); border-color: rgba(34,211,238,0.4); color: var(--lec2); }
+  .panel[data-lec="3"] .tag.accent { background: var(--lec3-dim); border-color: rgba(167,139,250,0.4); color: var(--lec3); }
+  .panel[data-lec="4"] .tag.accent { background: var(--lec4-dim); border-color: rgba(74,222,128,0.4); color: var(--lec4); }
+
+  /* ─── GOLDEN BOX ─── */
+  .golden-box {
+    margin-top: 20px;
+    padding: 18px 22px;
+    border-radius: 12px;
+    border: 1px solid rgba(251,191,36,0.4);
+    background: rgba(251,191,36,0.07);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .golden-box .gb-icon { font-size: 22px; flex-shrink: 0; }
+  .golden-box .gb-label {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 2px;
+    color: #fbbf24;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .golden-box .gb-text {
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text);
+    font-weight: 500;
+    direction: ltr;
+    font-family: var(--mono);
+  }
+  .golden-box .gb-text span { color: #fbbf24; font-weight: 700; }
+
+  /* ─── WIDE CARD ─── */
+  .kw-card.wide { grid-column: 1 / -1; }
+
+  /* ─── SEARCH ─── */
+  .search-wrap {
+    max-width: 480px;
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 44px 12px 16px;
+    font-family: var(--arabic);
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: #44446a; }
+  .search-wrap input::placeholder { color: var(--text-dim); }
+  .search-wrap .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
+  /* ─── SECTION SEPARATOR ─── */
+  .section-sep {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    grid-column: 1 / -1;
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Robotics AI — Keywords Reference</div>
+  <h1>كلمات مفتاحية<br>المحاضرات الأربعة</h1>
+  <h2>create by (NADER SOLTAN)</h2>
+  <p>اضغط على المحاضرة واتصفح الكلمات المفتاحية لكل تصنيف</p>
+</div>
+
+<!-- TABS -->
+<div class="nav-tabs">
+  <button class="tab-btn active" data-lec="1" onclick="showPanel(1)">📘 Lec 1 — Agents & Environments</button>
+  <button class="tab-btn" data-lec="2" onclick="showPanel(2)">📗 Lec 2 — Sensors</button>
+  <button class="tab-btn" data-lec="3" onclick="showPanel(3)">📙 Lec 3 — Vision & Self-Driving</button>
+  <button class="tab-btn" data-lec="4" onclick="showPanel(4)">📕 Lec 4 — Image Processing</button>
+</div>
+
+<!-- ══════════════ PANEL 1 ══════════════ -->
+<div class="panel active" data-lec="1">
+  <div class="panel-title">Lec 1 — Agent Types · PEAS · Environment Properties · Control</div>
+
+  <div class="kw-grid">
+
+    <!-- ODESDA GROUP -->
+    <div class="section-sep">🌍 Environment Properties — ODESDA</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">👁️</span>
+        <div><div class="kw-title">Fully Observable</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">full sensors</span>
+        <span class="tag">sees everything</span>
+        <span class="tag">complete information</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌫️</span>
+        <div><div class="kw-title">Partially Observable</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">fog / smoke / darkness</span>
+        <span class="tag">hidden / unknown</span>
+        <span class="tag">limited sensors</span>
+        <span class="tag">incomplete data</span>
+        <span class="tag">blind spots</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎯</span>
+        <div><div class="kw-title">Deterministic</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">same action → same result</span>
+        <span class="tag">predictable outcome</span>
+        <span class="tag">no randomness</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎲</span>
+        <div><div class="kw-title">Stochastic</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">unpredictable</span>
+        <span class="tag">random</span>
+        <span class="tag">noise</span>
+        <span class="tag">uncertain outcome</span>
+        <span class="tag">mutation</span>
+        <span class="tag">weather effects</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧊</span>
+        <div><div class="kw-title">Static</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">doesn't change while thinking</span>
+        <span class="tag">time not affecting</span>
+        <span class="tag">crossword puzzle</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">⏳</span>
+        <div><div class="kw-title">Semi-Static</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">chess with clock</span>
+        <span class="tag">board is static</span>
+        <span class="tag">time is decreasing</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">⚡</span>
+        <div><div class="kw-title">Dynamic</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">changes while thinking</span>
+        <span class="tag">moving obstacles</span>
+        <span class="tag">traffic</span>
+        <span class="tag">real-time</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔢</span>
+        <div><div class="kw-title">Discrete</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">limited states/actions</span>
+        <span class="tag">step by step</span>
+        <span class="tag">grid / chess</span>
+        <span class="tag">defined moves</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌊</span>
+        <div><div class="kw-title">Continuous</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">infinite values</span>
+        <span class="tag">speed / angle</span>
+        <span class="tag">steering wheel</span>
+        <span class="tag">real-world motion</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎞️</span>
+        <div><div class="kw-title">Episodic</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">each round independent</span>
+        <span class="tag">no future effect</span>
+        <span class="tag">classification tasks</span>
+        <span class="tag">isolated</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔁</span>
+        <div><div class="kw-title">Sequential</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">current affects future</span>
+        <span class="tag">planning required</span>
+        <span class="tag">navigation / chess</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">👤👥</span>
+        <div><div class="kw-title">Single / Multi-Agent</div><div class="kw-subtitle">ENVIRONMENT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag">alone → single</span>
+        <span class="tag accent">humans + robots</span>
+        <span class="tag">cooperative</span>
+        <span class="tag">competitive</span>
+      </div>
+    </div>
+
+    <!-- AGENT TYPES -->
+    <div class="section-sep">🤖 Agent Types</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">⚡</span>
+        <div><div class="kw-title">Simple Reflex Agent</div><div class="kw-subtitle">AGENT TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">condition-action rules</span>
+        <span class="tag">IF → THEN</span>
+        <span class="tag">no memory</span>
+        <span class="tag">current percept only</span>
+        <span class="tag">loops easily</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧠</span>
+        <div><div class="kw-title">Model-Based Reflex Agent</div><div class="kw-subtitle">AGENT TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">has memory</span>
+        <span class="tag">internal state</span>
+        <span class="tag">world model</span>
+        <span class="tag">partially observable OK</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎯</span>
+        <div><div class="kw-title">Goal-Based Agent</div><div class="kw-subtitle">AGENT TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">goal state</span>
+        <span class="tag">planning</span>
+        <span class="tag">reach target</span>
+        <span class="tag">future actions</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">💎</span>
+        <div><div class="kw-title">Utility-Based Agent</div><div class="kw-subtitle">AGENT TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">trade-off</span>
+        <span class="tag">best among many</span>
+        <span class="tag">comfort vs speed</span>
+        <span class="tag">maximize happiness</span>
+      </div>
+    </div>
+
+    <!-- PEAS -->
+    <div class="section-sep">📐 PEAS Framework</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📊</span>
+        <div><div class="kw-title">Performance</div><div class="kw-subtitle">PEAS</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">accuracy</span>
+        <span class="tag">speed</span>
+        <span class="tag">safety</span>
+        <span class="tag">comfort</span>
+        <span class="tag">profit</span>
+        <span class="tag">minimize cost</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌍</span>
+        <div><div class="kw-title">Environment</div><div class="kw-subtitle">PEAS</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">roads</span>
+        <span class="tag">patient / hospital</span>
+        <span class="tag">obstacles</span>
+        <span class="tag">other cars</span>
+        <span class="tag">medical staff</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🦾</span>
+        <div><div class="kw-title">Actuators</div><div class="kw-subtitle">PEAS</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">steering wheel</span>
+        <span class="tag">brake</span>
+        <span class="tag">accelerator</span>
+        <span class="tag">robot arm</span>
+        <span class="tag">wheels</span>
+        <span class="tag">screen display</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📡</span>
+        <div><div class="kw-title">Sensors</div><div class="kw-subtitle">PEAS</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">camera</span>
+        <span class="tag">radar</span>
+        <span class="tag">GPS</span>
+        <span class="tag">speedometer</span>
+        <span class="tag">keyboard input</span>
+        <span class="tag">file contents</span>
+      </div>
+    </div>
+
+    <!-- CONTROL -->
+    <div class="section-sep">🎛️ Control Systems</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔓</span>
+        <div><div class="kw-title">Open Loop Control</div><div class="kw-subtitle">CONTROL</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">no feedback</span>
+        <span class="tag">executes blindly</span>
+        <span class="tag">doesn't correct errors</span>
+        <span class="tag">no measurement</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔄</span>
+        <div><div class="kw-title">Closed Loop Control</div><div class="kw-subtitle">CONTROL</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">feedback exists</span>
+        <span class="tag">correct error</span>
+        <span class="tag">compares to reference</span>
+        <span class="tag">adjusts output</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔤</span>
+        <div><div class="kw-title">Symbols: r · u · y · x</div><div class="kw-subtitle">CONTROL NOTATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">r = Reference (target)</span>
+        <span class="tag accent">u = Input (control signal)</span>
+        <span class="tag accent">y = Output (measured)</span>
+        <span class="tag accent">x = State (position vector)</span>
+        <span class="tag">Dynamics = how state changes</span>
+        <span class="tag">Feedback = output → input</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🗺️</span>
+        <div><div class="kw-title">Path Planning & Workspace</div><div class="kw-subtitle">ROBOTICS</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">find route / avoid obstacles</span>
+        <span class="tag">workspace = physical area</span>
+        <span class="tag">replan if blocked</span>
+        <span class="tag">collision-free</span>
+      </div>
+    </div>
+
+    <!-- GOLDEN BOX -->
+    <div class="golden-box wide">
+      <div class="gb-icon">🔥</div>
+      <div>
+        <div class="gb-label">أقوى سطر في المحاضرة — حفظه غيبًا</div>
+        <div class="gb-text">
+          Real World =
+          <span>Partially Observable</span> +
+          <span>Stochastic</span> +
+          <span>Sequential</span> +
+          <span>Dynamic</span> +
+          <span>Continuous</span> +
+          <span>Multi-Agent</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+</div><!-- /panel 1 -->
+
+
+<!-- ══════════════ PANEL 2 ══════════════ -->
+<div class="panel" data-lec="2">
+  <div class="panel-title">Lec 2 — Sensors · Transduction · Fusion · Classification</div>
+
+  <div class="kw-grid">
+
+    <div class="section-sep">📂 Sensor Classification</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔭</span>
+        <div><div class="kw-title">Exteroceptive</div><div class="kw-subtitle">CLASSIFICATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">measures external world</span>
+        <span class="tag">camera</span>
+        <span class="tag">radar</span>
+        <span class="tag">compass</span>
+        <span class="tag">obstacle detection</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🫀</span>
+        <div><div class="kw-title">Proprioceptive</div><div class="kw-subtitle">CLASSIFICATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">measures robot's own state</span>
+        <span class="tag">joint angles</span>
+        <span class="tag">wheel speed</span>
+        <span class="tag">battery level</span>
+        <span class="tag">potentiometer</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📡</span>
+        <div><div class="kw-title">Active Sensor</div><div class="kw-subtitle">CLASSIFICATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">emits energy into environment</span>
+        <span class="tag">radar</span>
+        <span class="tag">SONAR</span>
+        <span class="tag">LiDAR</span>
+        <span class="tag">optical barrier</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎞️</span>
+        <div><div class="kw-title">Passive Sensor</div><div class="kw-subtitle">CLASSIFICATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">receives ambient energy only</span>
+        <span class="tag">RGB camera</span>
+        <span class="tag">microphone</span>
+        <span class="tag">thermistor</span>
+        <span class="tag">no emission</span>
+      </div>
+    </div>
+
+    <div class="section-sep">⚗️ Transduction Principles</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌡️</span>
+        <div><div class="kw-title">Thermistor</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Temperature → Resistance</span>
+        <span class="tag">heat changes current flow</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔥</span>
+        <div><div class="kw-title">Pyroelectric</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Thermal radiation → Voltage</span>
+        <span class="tag">detects moving humans/animals</span>
+        <span class="tag">motion sensor</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📏</span>
+        <div><div class="kw-title">LVDT</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Position → Inductance</span>
+        <span class="tag">linear displacement</span>
+        <span class="tag">magnetic core</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">💧</span>
+        <div><div class="kw-title">Humidity Sensor</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Humidity → Capacitance</span>
+        <span class="tag">water molecules change dielectric</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">💡</span>
+        <div><div class="kw-title">Photocurrent</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Light intensity → Current</span>
+        <span class="tag">photoelectric effect</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">⚗️</span>
+        <div><div class="kw-title">Electrochemical</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Chemistry → Voltage</span>
+        <span class="tag">gas detection</span>
+        <span class="tag">chemical reaction</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎤</span>
+        <div><div class="kw-title">Microphone</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Sound pressure → Anything</span>
+        <span class="tag">resistance / capacitance / voltage</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">👆</span>
+        <div><div class="kw-title">Touch / Bumper Sensors</div><div class="kw-subtitle">TRANSDUCTION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">switch open/close</span>
+        <span class="tag">change in resistance</span>
+        <span class="tag">change in capacitance</span>
+        <span class="tag">spring tension</span>
+      </div>
+    </div>
+
+    <div class="section-sep">🔊 SONAR & Ranging</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📻</span>
+        <div><div class="kw-title">SONAR</div><div class="kw-subtitle">Sound Navigation And Ranging</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">time of reflection → distance</span>
+        <span class="tag">Doppler shift → relative speed</span>
+        <span class="tag">bats & dolphins do it better</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧭</span>
+        <div><div class="kw-title">Heading Sensors</div><div class="kw-subtitle">SENSOR CATEGORY</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">orientation relative to fixed frame</span>
+        <span class="tag">gyroscope</span>
+        <span class="tag">compass</span>
+        <span class="tag">inclinometer</span>
+      </div>
+    </div>
+
+    <div class="section-sep">🔀 Fusion & Processing</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔀</span>
+        <div><div class="kw-title">Sensor Fusion</div><div class="kw-subtitle">CONCEPT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">combine multiple sensors → unified data</span>
+        <span class="tag">overcome limited accuracy</span>
+        <span class="tag">cost saving</span>
+        <span class="tag">redundancy / failsafe</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔗</span>
+        <div><div class="kw-title">Sensor Integration</div><div class="kw-subtitle">CONCEPT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">use fused data to perform action</span>
+        <span class="tag">decision making</span>
+        <span class="tag">directing the arm</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧹</span>
+        <div><div class="kw-title">Preprocessing</div><div class="kw-subtitle">CONCEPT</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">cleanup raw sensor data</span>
+        <span class="tag">noise reduction / filtering</span>
+        <span class="tag">re-calibration</span>
+        <span class="tag">coordinate transform</span>
+        <span class="tag">unique per sensor</span>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /panel 2 -->
+
+
+<!-- ══════════════ PANEL 3 ══════════════ -->
+<div class="panel" data-lec="3">
+  <div class="panel-title">Lec 3 — Computer Vision · Self-Driving Car Architecture</div>
+
+  <div class="kw-grid">
+
+    <div class="section-sep">👁️ Vision Definitions</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🖼️</span>
+        <div><div class="kw-title">Image Processing</div><div class="kw-subtitle">DEFINITION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">image in → processed image out</span>
+        <span class="tag">no understanding</span>
+        <span class="tag">pixel manipulation</span>
+        <span class="tag">sharpening / filtering</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧠</span>
+        <div><div class="kw-title">Computer Vision</div><div class="kw-subtitle">DEFINITION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">interpret physical meaning of image</span>
+        <span class="tag">high-level understanding</span>
+        <span class="tag">classify / detect / segment</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🤖</span>
+        <div><div class="kw-title">Robotic / Machine Vision</div><div class="kw-subtitle">DEFINITION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">vision → physical action</span>
+        <span class="tag">navigation / grasping</span>
+        <span class="tag">Machine Vision = industrial inspection</span>
+      </div>
+    </div>
+
+    <div class="section-sep">⚠️ Vision Challenges</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📦→📄</span>
+        <div><div class="kw-title">Loss of Information (3D→2D)</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">depth lost in projection</span>
+        <span class="tag">small near = large far</span>
+        <span class="tag">ambiguous size</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌓</span>
+        <div><div class="kw-title">Illumination Variation</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">light changes pixel values</span>
+        <span class="tag">shadow / bright sun</span>
+        <span class="tag">RGB fails in darkness</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📐</span>
+        <div><div class="kw-title">Viewpoint Variation</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">same object different angle → different appearance</span>
+        <span class="tag">top view vs side view</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📏</span>
+        <div><div class="kw-title">Scale Variation</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">same object different distance → different size</span>
+        <span class="tag">close vs far</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🫥</span>
+        <div><div class="kw-title">Occlusion</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">object hidden behind another</span>
+        <span class="tag">partial visibility</span>
+        <span class="tag">missing information</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🐈</span>
+        <div><div class="kw-title">Intra-Class Variation</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">same category different appearance</span>
+        <span class="tag">red apple vs green apple</span>
+        <span class="tag">same class wide variety</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌀</span>
+        <div><div class="kw-title">Deformation</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">non-rigid object changes shape</span>
+        <span class="tag">cat curled up</span>
+        <span class="tag">animal posture change</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🌿</span>
+        <div><div class="kw-title">Background Clutter</div><div class="kw-subtitle">CHALLENGE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">object blends into background</span>
+        <span class="tag">camouflage</span>
+        <span class="tag">visual noise</span>
+      </div>
+    </div>
+
+    <div class="section-sep">🚗 Self-Driving Car Architecture</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">👁️</span>
+        <div><div class="kw-title">Perception</div><div class="kw-subtitle">SELF-DRIVING — STEP 1</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">traffic lights / pedestrians / signs</span>
+        <span class="tag">camera primary sensor</span>
+        <span class="tag">classification / segmentation</span>
+        <span class="tag">interpret sensor data</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📍</span>
+        <div><div class="kw-title">Localization</div><div class="kw-subtitle">SELF-DRIVING — STEP 2</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">where am I exactly?</span>
+        <span class="tag">GPS ≈ 1-2m error</span>
+        <span class="tag">need 1-3cm accuracy</span>
+        <span class="tag">Visual Odometry</span>
+        <span class="tag">SLAM</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧠</span>
+        <div><div class="kw-title">Planning (The Brain)</div><div class="kw-subtitle">SELF-DRIVING — STEP 3</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">High-Level = city route</span>
+        <span class="tag">Behaviour = predict others</span>
+        <span class="tag">Local = avoid sudden obstacle</span>
+        <span class="tag">trajectory generation</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🎮</span>
+        <div><div class="kw-title">Control</div><div class="kw-subtitle">SELF-DRIVING — STEP 4</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">steering + throttle + brake</span>
+        <span class="tag">PID controller</span>
+        <span class="tag">physical execution</span>
+        <span class="tag">apply force to vehicle</span>
+      </div>
+    </div>
+
+    <div class="section-sep">📡 Self-Driving Sensors Comparison</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📷</span>
+        <div><div class="kw-title">Camera</div><div class="kw-subtitle">SENSOR</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">rich color / detail</span>
+        <span class="tag">classification / segmentation</span>
+        <span class="tag">fails in darkness / bad weather</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔵</span>
+        <div><div class="kw-title">LiDAR</div><div class="kw-subtitle">Light Detection And Ranging</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">laser pulse → time of flight</span>
+        <span class="tag">accurate 3D mapping</span>
+        <span class="tag">expensive</span>
+        <span class="tag">fails in bad weather</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📻</span>
+        <div><div class="kw-title">RADAR</div><div class="kw-subtitle">Radio Detection And Ranging</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">works in fog / rain / snow</span>
+        <span class="tag">low resolution / poor shape</span>
+        <span class="tag">measures velocity well</span>
+        <span class="tag">invented 1930s — military first</span>
+      </div>
+    </div>
+
+    <div class="golden-box wide">
+      <div class="gb-icon">🏁</div>
+      <div>
+        <div class="gb-label">الترتيب الصحيح في السيارة ذاتية القيادة</div>
+        <div class="gb-text">
+          <span>Perception</span> &amp; <span>Localization</span>
+          &nbsp;→&nbsp; <span>Planning</span>
+          &nbsp;→&nbsp; <span>Control</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /panel 3 -->
+
+
+<!-- ══════════════ PANEL 4 ══════════════ -->
+<div class="panel" data-lec="4">
+  <div class="panel-title">Lec 4 — Image Processing · Filters · Convolution · Noise</div>
+
+  <div class="kw-grid">
+
+    <div class="section-sep">🖼️ Image Fundamentals</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔢</span>
+        <div><div class="kw-title">Image as Function</div><div class="kw-subtitle">MATH</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">array / matrix of numbers (pixels)</span>
+        <span class="tag">d=1 → grayscale</span>
+        <span class="tag">d=3 → color (RGB)</span>
+        <span class="tag">range: 0–255 (8-bit)</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📐</span>
+        <div><div class="kw-title">Digital Image (Discrete)</div><div class="kw-subtitle">MATH</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">sampled on regular grid</span>
+        <span class="tag">finite pixel values</span>
+        <span class="tag">not continuous</span>
+        <span class="tag">integer values</span>
+      </div>
+    </div>
+
+    <div class="section-sep">🔧 Filters & Operations</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📦</span>
+        <div><div class="kw-title">Box Filter (Mean)</div><div class="kw-subtitle">LINEAR FILTER</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">average of neighborhood</span>
+        <span class="tag">smoothing effect</span>
+        <span class="tag">removes sharp features</span>
+        <span class="tag">equal weights</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔔</span>
+        <div><div class="kw-title">Gaussian Filter</div><div class="kw-subtitle">LINEAR FILTER</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">center pixels weigh most</span>
+        <span class="tag">σ controls smoothing extent</span>
+        <span class="tag">separable (rows then columns)</span>
+        <span class="tag">natural blur</span>
+        <span class="tag">large σ → heavy blur</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔃</span>
+        <div><div class="kw-title">Median Filter</div><div class="kw-subtitle">NON-LINEAR FILTER</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">sort neighborhood → pick middle</span>
+        <span class="tag">no new pixel values introduced</span>
+        <span class="tag">robust to outliers / spikes</span>
+        <span class="tag">best for salt & pepper noise</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔪</span>
+        <div><div class="kw-title">Sharpening Filter</div><div class="kw-subtitle">LINEAR FILTER</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">accentuates differences with local average</span>
+        <span class="tag">original − blurred + original</span>
+        <span class="tag">enhances edges</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">⚫⚪</span>
+        <div><div class="kw-title">Thresholding</div><div class="kw-subtitle">SEGMENTATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">intensity &gt; T → white (1)</span>
+        <span class="tag">else → black (0)</span>
+        <span class="tag">binary image output</span>
+        <span class="tag">separates objects from background</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">1️⃣</span>
+        <div><div class="kw-title">Unit Impulse (Identity)</div><div class="kw-subtitle">SPECIAL FILTER</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">zeros everywhere, 1 at center</span>
+        <span class="tag">output = input unchanged</span>
+        <span class="tag">a * e = a</span>
+      </div>
+    </div>
+
+    <div class="section-sep">✖️ Convolution vs Cross-Correlation</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">✖️</span>
+        <div><div class="kw-title">Convolution ( * )</div><div class="kw-subtitle">OPERATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">flip kernel (both dims) then dot product</span>
+        <span class="tag">G = H * F</span>
+        <span class="tag">reversed + shifted</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔍</span>
+        <div><div class="kw-title">Cross-Correlation ( ⊗ )</div><div class="kw-subtitle">OPERATION</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">NO flip → direct dot product</span>
+        <span class="tag">measure of similarity</span>
+        <span class="tag">template matching / pattern detection</span>
+        <span class="tag">max when signals match</span>
+      </div>
+    </div>
+
+    <div class="section-sep">📐 Convolution Properties</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">↔️</span>
+        <div><div class="kw-title">Properties of Convolution</div><div class="kw-subtitle">MATH</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">Commutative: a*b = b*a</span>
+        <span class="tag accent">Associative: a*(b*c) = (a*b)*c</span>
+        <span class="tag accent">Scalars factor out: k(a*b) = a*(kb)</span>
+        <span class="tag accent">Separable: 2D → two 1D passes</span>
+        <span class="tag">Identity: a*e = a</span>
+      </div>
+    </div>
+
+    <div class="section-sep">📡 Noise Types</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧂🌶️</span>
+        <div><div class="kw-title">Salt & Pepper Noise</div><div class="kw-subtitle">NOISE TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">random pure black & white pixels</span>
+        <span class="tag">isolated extreme spikes</span>
+        <span class="tag">fix with Median filter</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📶</span>
+        <div><div class="kw-title">Impulse Noise</div><div class="kw-subtitle">NOISE TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">random white pixels only</span>
+        <span class="tag">extreme spikes</span>
+        <span class="tag">fix with Median filter</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">〰️</span>
+        <div><div class="kw-title">Gaussian Noise</div><div class="kw-subtitle">NOISE TYPE</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">all pixels slightly affected</span>
+        <span class="tag">bell-curve distribution</span>
+        <span class="tag">grainy look</span>
+        <span class="tag">fix with Gaussian smoothing</span>
+      </div>
+    </div>
+
+    <div class="section-sep">🔤 Key Terminology</div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">📛</span>
+        <div><div class="kw-title">Filter = Kernel = Mask</div><div class="kw-subtitle">TERMINOLOGY</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">all three mean the same thing</span>
+        <span class="tag">small matrix slid over image</span>
+        <span class="tag">H in formula</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🔲</span>
+        <div><div class="kw-title">Segmentation</div><div class="kw-subtitle">GOAL</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">separate objects from background</span>
+        <span class="tag">used with thresholding</span>
+        <span class="tag">region of interest</span>
+      </div>
+    </div>
+
+    <div class="kw-card">
+      <div class="kw-card-header">
+        <span class="kw-emoji">🧩</span>
+        <div><div class="kw-title">Structure Extraction</div><div class="kw-subtitle">GOAL</div></div>
+      </div>
+      <div class="kw-tags">
+        <span class="tag accent">find edges / distinctive points</span>
+        <span class="tag">texture detection</span>
+        <span class="tag">understand image geometry</span>
+      </div>
+    </div>
+
+    <div class="golden-box wide">
+      <div class="gb-icon">⚡</div>
+      <div>
+        <div class="gb-label">الفرق الجوهري — احفظه</div>
+        <div class="gb-text">
+          <span>Convolution (*)</span> = flip kernel then multiply &nbsp;|&nbsp;
+          <span>Cross-Correlation (⊗)</span> = multiply directly, no flip &nbsp;|&nbsp;
+          <span>Median</span> = non-linear, sort & pick middle &nbsp;|&nbsp;
+          <span>Gaussian</span> = linear, weighted average, separable
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /panel 4 -->
+
+<script>
+  function showPanel(n) {
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.panel[data-lec="${n}"]`).classList.add('active');
+    document.querySelector(`.tab-btn[data-lec="${n}"]`).classList.add('active');
+  }
+</script>
+
+</body>
+</html>
