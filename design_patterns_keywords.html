@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Software Design Patterns — الكلمات المفتاحية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #1f2937;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #7d8590;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:'Cairo',sans-serif; }
+
+header {
+  text-align:center;
+  padding: 50px 20px 30px;
+  border-bottom: 1px solid var(--border);
+}
+header h1 {
+  font-size: clamp(24px,4vw,44px);
+  font-weight:900;
+  background: linear-gradient(135deg,#fff 0%,#58a6ff 60%,#a371f7 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  margin-bottom:8px;
+}
+header p { color:var(--muted); font-size:14px; }
+
+.search-bar {
+  max-width:460px; margin:24px auto 0; padding:0 20px;
+}
+.search-bar input {
+  width:100%; background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:12px 18px; color:var(--text);
+  font-family:'Cairo',sans-serif; font-size:14px; outline:none;
+  transition:border-color .2s; text-align:right;
+}
+.search-bar input:focus { border-color:#58a6ff; }
+.search-bar input::placeholder { color:var(--muted); }
+
+/* top filter tabs */
+.filter-tabs {
+  display:flex; flex-wrap:wrap; gap:6px;
+  justify-content:center; padding:24px 20px 0;
+}
+.ftab {
+  background:var(--surface); border:1px solid var(--border);
+  color:var(--muted); padding:6px 16px; border-radius:20px;
+  font-family:'Cairo',sans-serif; font-size:12px; font-weight:600;
+  cursor:pointer; transition:all .2s;
+}
+.ftab:hover { color:var(--text); border-color:#58a6ff; }
+.ftab.active { background:#58a6ff; border-color:#58a6ff; color:#000; }
+
+/* main container */
+.container { max-width:1300px; margin:0 auto; padding:36px 20px 80px; }
+
+/* lecture block */
+.lec-block {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:14px; margin-bottom:20px; overflow:hidden;
+  transition:opacity .2s;
+}
+.lec-block.hidden { display:none; }
+
+.lec-header {
+  display:flex; align-items:center; gap:12px;
+  padding:16px 20px; cursor:pointer;
+  border-bottom:1px solid var(--border);
+  user-select:none;
+}
+.lec-header:hover { background:rgba(255,255,255,.03); }
+
+.lec-icon {
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.lec-title { font-size:15px; font-weight:700; }
+.lec-num {
+  font-family:'Fira Code',monospace; font-size:11px;
+  color:var(--muted); background:var(--surface2);
+  padding:3px 9px; border-radius:6px; margin-right:auto;
+}
+.chevron {
+  color:var(--muted); font-size:18px;
+  transition:transform .3s; flex-shrink:0;
+}
+.lec-block.open .chevron { transform:rotate(180deg); }
+
+/* groups inside lecture */
+.lec-body { padding:20px; display:none; }
+.lec-block.open .lec-body { display:block; }
+
+.group { margin-bottom:20px; }
+.group:last-child { margin-bottom:0; }
+.group-title {
+  font-size:11px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:var(--muted);
+  margin-bottom:10px; padding-bottom:6px;
+  border-bottom:1px dashed var(--border);
+  font-family:'Fira Code',monospace;
+  display:flex; align-items:center; gap:7px;
+}
+.group-title span {
+  width:6px; height:6px; border-radius:50%; display:inline-block; flex-shrink:0;
+}
+
+.kw-wrap { display:flex; flex-wrap:wrap; gap:8px; }
+
+.kw {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 13px; border-radius:8px; font-size:13px; font-weight:600;
+  border:1px solid transparent; cursor:default;
+  transition:transform .15s, box-shadow .15s;
+  position:relative; overflow:hidden;
+}
+.kw::before {
+  content:''; position:absolute; inset:0;
+  background:currentColor; opacity:.08; pointer-events:none;
+}
+.kw:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.35); }
+.kw .dot { width:5px; height:5px; border-radius:50%; background:currentColor; flex-shrink:0; }
+
+.c-blue  { color:#58a6ff; border-color:rgba(88,166,255,.25); }
+.c-purple{ color:#a371f7; border-color:rgba(163,113,247,.25); }
+.c-green { color:#3fb950; border-color:rgba(63,185,80,.25); }
+.c-amber { color:#d29922; border-color:rgba(210,153,34,.25); }
+.c-red   { color:#f85149; border-color:rgba(248,81,73,.25); }
+.c-pink  { color:#f778ba; border-color:rgba(247,120,186,.25); }
+.c-teal  { color:#39d353; border-color:rgba(57,211,83,.25); }
+.c-cyan  { color:#76e3ea; border-color:rgba(118,227,234,.25); }
+
+/* empty state */
+.empty { text-align:center; padding:60px; color:var(--muted); font-size:15px; display:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Software Design Patterns</h1>
+  <p>الكلمات المفتاحية المنظّمة — محاضرات ١ إلى ٨</p>
+  <div class="search-bar">
+    <input id="searchInput" type="text" placeholder="🔍 ابحث عن أي مصطلح..." oninput="doSearch()">
+  </div>
+</header>
+
+<div class="filter-tabs" id="filterTabs"></div>
+
+<div class="container" id="container"></div>
+<div class="empty" id="empty">لا توجد نتائج مطابقة</div>
+
+<script>
+const LECTURES = [
+  {
+    id:"lec1", label:"محاضرة ١", title:"Introduction — ليه نحتاج Design Patterns؟",
+    icon:"📘", iconBg:"rgba(88,166,255,.15)",
+    groups:[
+      { title:"مشاكل التصميم السيئ", dot:"#f85149", color:"c-red", kws:[
+        "Tight Coupling","Low Reusability","Rigidity","Fragility","God Object",
+        "Cascade of Changes","Complex Code"
+      ]},
+      { title:"تعريف الـ Pattern", dot:"#58a6ff", color:"c-blue", kws:[
+        "Reusable Solution","Commonly Occurring Problem","Given Context",
+        "Higher-Level Design","Conceptual"
+      ]},
+      { title:"ما هو ليس Pattern", dot:"#d29922", color:"c-amber", kws:[
+        "NOT an Algorithm","NOT a Code Snippet","NOT a Framework","NOT a Library"
+      ]},
+      { title:"التاريخ — Gang of Four", dot:"#a371f7", color:"c-purple", kws:[
+        "Christopher Alexander 1977","A Pattern Language",
+        "Erich Gamma","Richard Helm","Ralph Johnson","John Vlissides","GoF Book 1994"
+      ]},
+      { title:"Design for Change", dot:"#3fb950", color:"c-green", kws:[
+        "The Only Constant is Change","Isolate Change",
+        "Encapsulate Variation","Reduce Ripple Effects"
+      ]},
+      { title:"بنية الـ Pattern", dot:"#76e3ea", color:"c-cyan", kws:[
+        "Pattern Name","Problem","Context","Solution","Consequences","Trade-offs","Pros & Cons"
+      ]}
+    ]
+  },
+  {
+    id:"lec2", label:"محاضرة ٢", title:"SOLID Principles",
+    icon:"⚖️", iconBg:"rgba(163,113,247,.15)",
+    groups:[
+      { title:"S — Single Responsibility", dot:"#58a6ff", color:"c-blue", kws:[
+        "One Reason to Change","One Axis of Change",
+        "Easier Testing","Independent Changes","Better Reuse",
+        "⚠ NOT: One Method Per Class","⚠ NOT: Tiny Classes Only"
+      ]},
+      { title:"O — Open-Closed", dot:"#3fb950", color:"c-green", kws:[
+        "Open for Extension","Closed for Modification",
+        "Add Features Without Changing Code",
+        "⚠ Avoid: Too Many Early Abstractions"
+      ]},
+      { title:"L — Liskov Substitution", dot:"#a371f7", color:"c-purple", kws:[
+        "Superclass Replaceable by Subclass","Duck Test",
+        "No Broken Polymorphism",
+        "⚠ Violation → Hidden Bugs","⚠ Violation → Surprising Behavior"
+      ]},
+      { title:"I — Interface Segregation", dot:"#d29922", color:"c-amber", kws:[
+        "Small Interfaces","No Forced Dependencies",
+        "Clean Contracts","Less Coupling",
+        "⚠ Problem: Unused Methods Forced"
+      ]},
+      { title:"D — Dependency Inversion", dot:"#f778ba", color:"c-pink", kws:[
+        "Depend on Abstractions","High-Level Modules Independent",
+        "Supports Dependency Injection","Easy Testing",
+        "⚠ Problem: Hard to Switch Database","⚠ Problem: Hard to Test"
+      ]}
+    ]
+  },
+  {
+    id:"lec3", label:"محاضرة ٣", title:"GoF Classification — تصنيف الـ 23 Pattern",
+    icon:"🗂️", iconBg:"rgba(63,185,80,.15)",
+    groups:[
+      { title:"ليه التصنيف؟", dot:"#76e3ea", color:"c-cyan", kws:[
+        "Organize Knowledge","Quickly Narrow Choices",
+        "Understand Intent Before Implementation","Avoid Misuse"
+      ]},
+      { title:"Creational Patterns (5)", dot:"#58a6ff", color:"c-blue", kws:[
+        "How Objects Are Created","Hide Creation from Client",
+        "Reduce Coupling to Concrete Classes","→ Abstraction",
+        "Singleton","Factory Method","Abstract Factory","Builder","Prototype"
+      ]},
+      { title:"Structural Patterns (7)", dot:"#a371f7", color:"c-purple", kws:[
+        "How Classes Are Combined","Combine Objects","Extend Behavior","Adapt Interfaces","→ Composition",
+        "Adapter","Bridge","Composite","Decorator","Facade","Flyweight","Proxy"
+      ]},
+      { title:"Behavioral Patterns (11)", dot:"#3fb950", color:"c-green", kws:[
+        "How Objects Communicate","Responsibility Assignment",
+        "Simplify Complex Interactions","Replace Conditional Logic","→ Delegation",
+        "Strategy","Observer","Command","State","Template Method","Iterator",
+        "Mediator","Memento","Chain of Responsibility","Visitor","Interpreter"
+      ]},
+      { title:"العلاقة مع SOLID", dot:"#d29922", color:"c-amber", kws:[
+        "Creational → DIP + OCP","Structural → OCP + SRP","Behavioral → SRP + OCP + LSP"
+      ]}
+    ]
+  },
+  {
+    id:"lec4", label:"محاضرة ٤", title:"Singleton Pattern",
+    icon:"🔒", iconBg:"rgba(210,153,34,.15)",
+    groups:[
+      { title:"التعريف والبنية", dot:"#d29922", color:"c-amber", kws:[
+        "Only One Instance","Global Point of Access",
+        "Private Constructor","Static Instance Variable","Public Static Access Method"
+      ]},
+      { title:"Eager vs Lazy", dot:"#58a6ff", color:"c-blue", kws:[
+        "Eager: Created at Class Loading","Eager: Thread-Safe ✓","Eager: Resource Waste if Unused",
+        "Lazy: Created Only When Needed","Lazy: Saves Resources ✓","Lazy: NOT Thread-Safe ✗"
+      ]},
+      { title:"حلول Thread Safety", dot:"#3fb950", color:"c-green", kws:[
+        "Synchronized Method — Simple / Slow",
+        "Double-Checked Locking — Complex / Fast",
+        "Static Inner Class — Recommended"
+      ]},
+      { title:"حالات الاستخدام", dot:"#76e3ea", color:"c-cyan", kws:[
+        "Logging Systems","Configuration Managers",
+        "Cache Managers","Device Drivers","Thread Pools"
+      ]},
+      { title:"⚠ Anti-Pattern وأخطاؤه", dot:"#f85149", color:"c-red", kws:[
+        "Hidden Dependencies","Global State","Hard to Test","Hard to Mock","Reduced Flexibility",
+        "Mistake: Used as Global Variable","Mistake: God Object","Mistake: Excessive Responsibility",
+        "Singleton ≠ Always Bad","Singleton ≠ Static Methods"
+      ]},
+      { title:"Singleton vs Dependency Injection", dot:"#f778ba", color:"c-pink", kws:[
+        "DI: Explicit Dependencies","DI: Easy to Test","DI: Loose Coupling",
+        "Prefer DI over Singleton"
+      ]}
+    ]
+  },
+  {
+    id:"lec5", label:"محاضرة ٥", title:"Factory Method Pattern",
+    icon:"🏭", iconBg:"rgba(248,81,73,.15)",
+    groups:[
+      { title:"التعريف والمفهوم", dot:"#f85149", color:"c-red", kws:[
+        "Interface for Creating Objects","Subclasses Decide Which Class",
+        "Factory Decides — NOT Client","Delegate Object Creation"
+      ]},
+      { title:"البنية", dot:"#58a6ff", color:"c-blue", kws:[
+        "Creator Class","Concrete Creator","Product Interface","Concrete Product"
+      ]},
+      { title:"أمثلة واقعية", dot:"#a371f7", color:"c-purple", kws:[
+        "WindowsButton / MacButton","TextDocument / PDFDocument",
+        "Zombie / Robot / Alien","Payment Gateways (CreditCard / PayPal / Cash)"
+      ]},
+      { title:"✅ فوائد", dot:"#3fb950", color:"c-green", kws:[
+        "Loose Coupling","Client Depends on Abstraction",
+        "Open/Closed Principle","Centralized Object Creation","Better Maintainability"
+      ]},
+      { title:"⚠ عيوب وأخطاء", dot:"#f85149", color:"c-red", kws:[
+        "More Classes Per Product","Increased Complexity",
+        "Overkill for Simple Systems","Mistake: Factory for Everything",
+        "Mistake: Using new Inside Client"
+      ]}
+    ]
+  },
+  {
+    id:"lec6", label:"محاضرة ٦", title:"Abstract Factory Pattern",
+    icon:"🏗️", iconBg:"rgba(247,120,186,.15)",
+    groups:[
+      { title:"التعريف", dot:"#f778ba", color:"c-pink", kws:[
+        "Families of Related Objects","Dependent Objects",
+        "Without Specifying Concrete Classes","Factory Produces Related Objects Together"
+      ]},
+      { title:"مثال", dot:"#58a6ff", color:"c-blue", kws:[
+        "WindowsFactory → WindowsButton + WindowsCheckbox",
+        "MacFactory → MacButton + MacCheckbox"
+      ]},
+      { title:"الفرق عن Factory Method", dot:"#a371f7", color:"c-purple", kws:[
+        "Factory Method → One Product","Abstract Factory → Group of Objects",
+        "Factory Method → Inheritance","Abstract Factory → Composition",
+        "Factory Method → Simpler","Abstract Factory → More Complex"
+      ]},
+      { title:"حالات الاستخدام", dot:"#76e3ea", color:"c-cyan", kws:[
+        "UI Frameworks Windows/Mac Themes","Game Development Environments",
+        "Database Drivers MySQL/Oracle","Cross-Platform Applications"
+      ]},
+      { title:"⚠ عيوب وأخطاء", dot:"#f85149", color:"c-red", kws:[
+        "Hard to Add New Products","Must Update ALL Factories","More Abstraction Layers",
+        "Mistake: Overusing — Only One Product","Mistake: Overusing — No Product Families"
+      ]}
+    ]
+  },
+  {
+    id:"lec7", label:"محاضرة ٧", title:"Adapter Pattern",
+    icon:"🔌", iconBg:"rgba(118,227,234,.15)",
+    groups:[
+      { title:"التعريف", dot:"#76e3ea", color:"c-cyan", kws:[
+        "Structural Design Pattern","Incompatible Interfaces Work Together","Interface Conversion"
+      ]},
+      { title:"النوعين", dot:"#58a6ff", color:"c-blue", kws:[
+        "Class Adapter: Inheritance-Based","Class Adapter: Adapter extends Adaptee",
+        "Class Adapter: Faster / Less Flexible",
+        "Object Adapter: Composition-Based","Object Adapter: Adapter contains Adaptee",
+        "Object Adapter: More Flexible / Preferred"
+      ]},
+      { title:"حالات الاستخدام", dot:"#3fb950", color:"c-green", kws:[
+        "Legacy System Integration","Payment Gateways (Different APIs)",
+        "Database Drivers","JSON/XML Converters","Mobile Chargers / Hardware"
+      ]},
+      { title:"المقارنات", dot:"#a371f7", color:"c-purple", kws:[
+        "Adapter vs Decorator — Purpose: Interface Conversion vs Add Behavior",
+        "Adapter vs Decorator — Focus: Compatibility vs Enhancement",
+        "Adapter vs Facade — Scope: One Class vs Whole Subsystem",
+        "Adapter vs Facade — Purpose: Match Interfaces vs Simplify"
+      ]},
+      { title:"⚠ عيوب وأخطاء", dot:"#f85149", color:"c-red", kws:[
+        "Performance Overhead","Increased Complexity",
+        "Mistake: Using When Already Compatible",
+        "Mistake: Mixing Responsibilities","Mistake: Ignoring Simpler Solutions"
+      ]}
+    ]
+  },
+  {
+    id:"lec8", label:"محاضرة ٨", title:"Chain of Responsibility Pattern",
+    icon:"⛓️", iconBg:"rgba(63,185,80,.15)",
+    groups:[
+      { title:"التعريف", dot:"#3fb950", color:"c-green", kws:[
+        "Behavioral Design Pattern","Request Passed Along Chain of Handlers",
+        "Each Handler: Process OR Pass","Sender Unaware of Receiver"
+      ]},
+      { title:"نوعي السلوك", dot:"#58a6ff", color:"c-blue", kws:[
+        "Single Handler Processes — Most Common",
+        "Multiple Handlers Process — Logging + Validation"
+      ]},
+      { title:"حالات الاستخدام", dot:"#76e3ea", color:"c-cyan", kws:[
+        "Logging Systems INFO→DEBUG→ERROR","Event Handling Systems",
+        "Web Request Filters Auth+Validation","Middleware Pipelines","Customer Support Escalation"
+      ]},
+      { title:"المقارنات", dot:"#a371f7", color:"c-purple", kws:[
+        "Chain vs Strategy — Selection: Dynamic Chain vs One Algorithm",
+        "Chain vs Strategy — Behavior: Pass Request vs Execute Strategy",
+        "Chain vs Command — Purpose: Handle Request vs Encapsulate Request",
+        "Chain vs Command — Flow: Sequential vs Independent"
+      ]},
+      { title:"✅ فوائد", dot:"#3fb950", color:"c-green", kws:[
+        "Loose Coupling — Sender Doesn't Know Receiver",
+        "Flexible Chain — Handlers Add/Remove Easily",
+        "SRP — Each Handler One Job","OCP — Add Handlers Without Modifying Code"
+      ]},
+      { title:"⚠ عيوب وأخطاء", dot:"#f85149", color:"c-red", kws:[
+        "Request May Go Unhandled","Debugging Difficulty",
+        "Performance Overhead (Long Chains)",
+        "Mistake: Missing Next Handler → Request Loss",
+        "Mistake: Wrong Handler Ordering"
+      ]}
+    ]
+  }
+];
+
+let activeCat = "all";
+
+function buildPage() {
+  // filter tabs
+  const tabsEl = document.getElementById('filterTabs');
+  const allCats = [{id:"all",label:"الكل"}, ...LECTURES.map(l=>({id:l.id,label:l.label}))];
+  allCats.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'ftab' + (c.id==='all'?' active':'');
+    b.textContent = c.label;
+    b.onclick = () => {
+      activeCat = c.id;
+      document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById('searchInput').value = '';
+      applyFilter('');
+    };
+    tabsEl.appendChild(b);
+  });
+
+  // lecture blocks
+  const cont = document.getElementById('container');
+  LECTURES.forEach(lec => {
+    const block = document.createElement('div');
+    block.className = 'lec-block open';
+    block.dataset.id = lec.id;
+
+    let groupsHTML = lec.groups.map(g => `
+      <div class="group" data-group="${g.title}">
+        <div class="group-title"><span style="background:${g.dot}"></span>${g.title}</div>
+        <div class="kw-wrap">
+          ${g.kws.map(k=>`<span class="kw ${g.color}" data-kw="${k.toLowerCase()}"><span class="dot"></span>${k}</span>`).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    block.innerHTML = `
+      <div class="lec-header" onclick="toggleBlock(this)">
+        <div class="lec-icon" style="background:${lec.iconBg}">${lec.icon}</div>
+        <div class="lec-title">${lec.title}</div>
+        <div class="lec-num">${lec.label}</div>
+        <span class="chevron">▾</span>
+      </div>
+      <div class="lec-body">${groupsHTML}</div>
+    `;
+    cont.appendChild(block);
+  });
+}
+
+function toggleBlock(header) {
+  header.closest('.lec-block').classList.toggle('open');
+}
+
+function applyFilter(q) {
+  q = q.toLowerCase().trim();
+  let anyVisible = false;
+  document.querySelectorAll('.lec-block').forEach(block => {
+    const catMatch = activeCat === 'all' || block.dataset.id === activeCat;
+    if (!catMatch) { block.classList.add('hidden'); return; }
+    block.classList.remove('hidden');
+
+    if (!q) {
+      block.querySelectorAll('.kw').forEach(k => k.style.display='');
+      block.querySelectorAll('.group').forEach(g => g.style.display='');
+      anyVisible = true;
+      return;
+    }
+
+    let blockHasAny = false;
+    block.querySelectorAll('.group').forEach(g => {
+      let groupHasAny = false;
+      g.querySelectorAll('.kw').forEach(k => {
+        const match = k.dataset.kw.includes(q);
+        k.style.display = match ? '' : 'none';
+        if (match) groupHasAny = true;
+      });
+      g.style.display = groupHasAny ? '' : 'none';
+      if (groupHasAny) blockHasAny = true;
+    });
+
+    if (!blockHasAny) block.classList.add('hidden');
+    else { anyVisible = true; block.classList.add('open'); }
+  });
+  document.getElementById('empty').style.display = anyVisible ? 'none' : 'block';
+}
+
+function doSearch() {
+  const q = document.getElementById('searchInput').value;
+  applyFilter(q);
+}
+
+buildPage();
+</script>
+</body>
+</html>
